@@ -15,7 +15,7 @@ router.register('courses', CourseViewSet)
 router.register('users', UserViewSet)
 
 urlpatterns = [
-    path('', home),
+    path('', home), # пустой маршрут
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
 
