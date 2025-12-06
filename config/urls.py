@@ -2,11 +2,20 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from materials.views import CourseViewSet, LessonListAPIView, LessonRetrieveAPIView, LessonCreateAPIView, LessonUpdateAPIView, LessonDeleteAPIView
+from users.views import UserViewSet
+
+# маршрут для пустого URL
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("<h1>API работает</h1><p>Используйте /api/</p>")
 
 router = DefaultRouter()
 router.register('courses', CourseViewSet)
+router.register('users', UserViewSet)
 
 urlpatterns = [
+    path('', home),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
 

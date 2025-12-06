@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "users",
     "vehicle",
+    "materials",
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
