@@ -8,6 +8,7 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = "__all__"
 
+
 class MotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Moto
