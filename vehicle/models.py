@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Car(models.Model):
     title = models.CharField(max_length=150, verbose_name="название")
     description = models.TextField(verbose_name="описание")
