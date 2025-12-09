@@ -1,9 +1,16 @@
 from rest_framework import serializers
+from .models import CustomUser, Payment
 
-from .models import CustomUser
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
+    payments = PaymentSerializer(many=True, source='payment_set', read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ["id", "email", "username", "phone", "city", "avatar"]
+        fields = ['id', 'email', 'phone', 'city', 'avatar', 'payments']
