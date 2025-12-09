@@ -20,3 +20,10 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.course.title})"
+
+
+class Payments(models.Model):
+    pass
+
+    # def __str__(self):
+    #     return f"{self.course if self.course else self.lesson}"
