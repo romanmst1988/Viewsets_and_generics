@@ -1,26 +1,22 @@
 [
   {
     "model": "users.payment",
-    "pk": 2,
+    "pk": 1,
     "fields": {
-      "date": "2025-01-01T10:00:00Z",
-      "user": 1,
-      "course": null,
+      "payment_date": "2025-01-10T12:00:00Z",
       "lesson": 1,
-      "amount": "590.00",
-      "method": "cash"
+      "amount": "1500.00",
+      "payment_method": "cash"
     }
   },
   {
     "model": "users.payment",
-    "pk": 1,
+    "pk": 2,
     "fields": {
-      "date": "2025-01-01T10:00:00Z",
-      "user": 1,
-      "course": 1,
-      "lesson": null,
-      "amount": "1990.00",
-      "method": "transfer"
+      "payment_date": "2025-02-05T10:30:00Z",
+      "lesson": 5,
+      "amount": "500.00",
+      "payment_method": "transfer"
     }
   }
 ]

@@ -12,6 +12,7 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
+    lesson_id = models.IntegerField(max_length=255)
     course = models.ForeignKey(Course, related_name="lessons", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
