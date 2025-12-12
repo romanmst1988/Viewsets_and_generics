@@ -37,4 +37,5 @@ urlpatterns = [
         LessonDeleteAPIView.as_view(),
         name="lesson_delete",
     ),
+    path("users/",include("users.urls", namespace="users")),
 ]
