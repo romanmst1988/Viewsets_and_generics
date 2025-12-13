@@ -1,22 +1,24 @@
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from materials.models import Course, Lesson
+from django.contrib.auth.models import BaseUserManager
+
+from users.permissions import CustomUserManager
+
 
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=50, blank=True, null=True)
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
-
+    username = None
     email = models.EmailField(unique=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # type: ignore
 
     def __str__(self):
         return self.email
-
 
 
 class Payment(models.Model):
@@ -48,16 +50,6 @@ class Payment(models.Model):
         ('transfer', 'Перевод на счет'),
     ]
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
-
-    # def clean(self):
-    #     if self.course and self.lesson:
-    #         raise ValidationError("Можно указать либо курс, либо урок, но не оба одновременно.")
-    #     if not self.course and not self.lesson:
-    #         raise ValidationError("Должен быть указан либо курс, либо урок.")
-    #
-    # def save(self, *args, **kwargs):
-    #     self.clean()
-    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Оплата {self.user.email} — {self.amount}"

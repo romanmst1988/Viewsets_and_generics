@@ -30,9 +30,11 @@ INSTALLED_APPS = [
     "users",
     "materials",
     "rest_framework_simplejwt",
+    "rest_framework.authtoken",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -123,6 +125,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Настройки JWT-токенов
 REST_FRAMEWORK = {
+
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
