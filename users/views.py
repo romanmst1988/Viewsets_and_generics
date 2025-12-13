@@ -1,14 +1,12 @@
-from rest_framework.viewsets import ModelViewSet
-
-from .models import CustomUser
-from .serializers import UserSerializer
-
-from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Payment
+from .models import Payment, CustomUser
 from .serializers import PaymentSerializer
 from .filters import PaymentFilter
 
+from rest_framework import viewsets, generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .serializers import UserSerializer, UserCreateSerializer
+from .permissions import IsOwnerProfile
 
 class PaymentListAPIView(generics.ListAPIView):
     queryset = Payment.objects.all()
@@ -17,7 +15,18 @@ class PaymentListAPIView(generics.ListAPIView):
     filterset_class = PaymentFilter
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        return UserSerializer
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsOwnerProfile()]
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
