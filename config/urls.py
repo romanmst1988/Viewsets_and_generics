@@ -1,12 +1,18 @@
 from django.contrib import admin
+
 # маршрут для пустого URL
 from django.http import HttpResponse
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from materials.views import (CourseViewSet, LessonCreateAPIView,
-                             LessonDeleteAPIView, LessonListAPIView,
-                             LessonRetrieveAPIView, LessonUpdateAPIView)
+from materials.views import (
+    CourseViewSet,
+    LessonCreateAPIView,
+    LessonDeleteAPIView,
+    LessonListAPIView,
+    LessonRetrieveAPIView,
+    LessonUpdateAPIView,
+)
 from users.views import UserViewSet
 
 
@@ -37,5 +43,5 @@ urlpatterns = [
         LessonDeleteAPIView.as_view(),
         name="lesson_delete",
     ),
-    path("users/",include("users.urls", namespace="users")),
+    path("users/", include("users.urls", namespace="users")),
 ]
