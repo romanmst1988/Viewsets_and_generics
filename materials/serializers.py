@@ -1,20 +1,32 @@
 from rest_framework import serializers
-
 from .models import Course, Lesson
+from materials.validators import youtube_only_validator
+from materials.models import Subscription
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    video_url = serializers.URLField(validators=[youtube_only_validator])
+
     class Meta:
         model = Lesson
-        fields = ["id", "title", "description", "preview", "video_url"]
+        fields = '__all__'
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    lessons_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ["id", "title", "description", "preview", "lessons_count"]
+        fields = '__all__'
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
+            return False
+        return Subscription.objects.filter(
+            user=request.user,
+            course=obj
+        ).exists()
 
     def get_lessons_count(self, obj):
         # используем related_name 'lessons' (определён в models.Lesson)

@@ -44,4 +44,8 @@ urlpatterns = [
         name="lesson_delete",
     ),
     path("users/", include("users.urls", namespace="users")),
+    path('materials/', include('materials.urls')),
+    path('admin/', admin.site.urls),
+    path('materials/', include('materials.urls')),
+    path('users/', include('users.urls')),
 ]
