@@ -42,6 +42,9 @@ class LessonViewSet(ModelViewSet):
     serializer_class = LessonSerializer
     pagination_class = CourseLessonPagination
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 # Lesson — Generics с явными правами
 class LessonCreateAPIView(generics.CreateAPIView):
     queryset = Lesson.objects.all()

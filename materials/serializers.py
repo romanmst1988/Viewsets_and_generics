@@ -5,12 +5,11 @@ from materials.models import Subscription
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    video_url = serializers.URLField(validators=[youtube_only_validator])
+
     class Meta:
         model = Lesson
         fields = '__all__'
-        validators = [
-            youtube_only_validator
-        ]
 
 
 class CourseSerializer(serializers.ModelSerializer):

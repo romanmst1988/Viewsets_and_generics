@@ -1,11 +1,8 @@
-from django.test import TestCase
-
-from rest_framework.test import APITestCase
-from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
-from users.models import CustomUser
 from materials.models import Course, Lesson, Subscription
+from users.models import CustomUser
 
 
 class LessonCRUDTest(APITestCase):
@@ -15,15 +12,20 @@ class LessonCRUDTest(APITestCase):
             email='user@test.com',
             password='12345'
         )
+
         self.course = Course.objects.create(
             title='Python',
-            description='Test'
+            description='Test',
+            owner=self.user  # 🔥 ВАЖНО
         )
+
         self.lesson = Lesson.objects.create(
             title='Lesson 1',
             course=self.course,
-            video_link='https://youtube.com/watch?v=123'
+            video_url='https://youtube.com/watch?v=123',
+            owner=self.user
         )
+
         self.client.force_authenticate(user=self.user)
 
     def test_create_lesson(self):
@@ -39,7 +41,7 @@ class LessonCRUDTest(APITestCase):
         data = {
             'title': 'Lesson bad',
             'course': self.course.id,
-            'video_link': 'https://google.com/video'
+            'video_url': 'https://google.com/video'
         }
         response = self.client.post('/lessons/', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -52,16 +54,20 @@ class SubscriptionTest(APITestCase):
             email='sub@test.com',
             password='12345'
         )
+
         self.course = Course.objects.create(
             title='Django',
-            description='Framework'
+            description='Framework',
+            owner=self.user  # 🔥 ВАЖНО
         )
+
         self.client.force_authenticate(user=self.user)
 
     def test_subscribe_and_unsubscribe(self):
-        url = reverse('subscribe')
+        url = '/materials/subscribe/'
 
         response = self.client.post(url, {'course_id': self.course.id})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['message'], 'Подписка добавлена')
         self.assertTrue(
             Subscription.objects.filter(
