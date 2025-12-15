@@ -12,20 +12,20 @@ from rest_framework.viewsets import ModelViewSet
 
 from users.permissions import IsModerator, IsOwner
 
-from .models import Course, Lesson
+from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from materials.models import Course, Subscription
+from materials.paginators import CourseLessonPagination
 
-
+# Подключение пагинатора
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    pagination_class = CourseLessonPagination
 
     def get_permissions(self):
         if self.action in ["create", "destroy"]:
@@ -37,6 +37,10 @@ class CourseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+class LessonViewSet(ModelViewSet):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+    pagination_class = CourseLessonPagination
 
 # Lesson — Generics с явными правами
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -49,8 +53,6 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 
 # LessonRetrieveUpdateDestroyAPIView
-
-
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
