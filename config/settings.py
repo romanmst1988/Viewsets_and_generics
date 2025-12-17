@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "materials",
     "rest_framework_simplejwt",
     "rest_framework.authtoken",
+    "drf_yasg",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
