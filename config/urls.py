@@ -48,4 +48,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('materials/', include('materials.urls')),
     path('users/', include('users.urls')),
+    # path('', include('docs.urls')),
 ]
