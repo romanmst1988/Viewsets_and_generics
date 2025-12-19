@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework.authtoken",
     "django.contrib.staticfiles",
-    "drf-yasg",
+    "drf_yasg",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"

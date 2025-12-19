@@ -47,4 +47,4 @@ class UserSerializer(serializers.ModelSerializer):  # type: ignore
 
     class Meta:
         model = CustomUser
-        fields = ["id", "email", "phone", "city", "avatar", "payments"]
+        fields = ["id", 'email', 'username', "payments"]
