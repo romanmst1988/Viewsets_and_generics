@@ -25,12 +25,13 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
     "rest_framework",
     "users",
     "materials",
     "rest_framework_simplejwt",
     "rest_framework.authtoken",
+    "django.contrib.staticfiles",
+    "drf-yasg",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
