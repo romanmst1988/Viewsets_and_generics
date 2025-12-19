@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # маршрут для пустого URL
 from django.http import HttpResponse
-from django.urls import include, path
+from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
 
 from materials.views import (
@@ -30,7 +30,6 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
-
 def home(request):
     return HttpResponse("<h1>API работает</h1><p>Используйте /api/</p>")
 
