@@ -153,3 +153,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
+
+STRIPE_SECRET_KEY = 'sk_test_...'
+STRIPE_SUCCESS_URL = 'http://localhost:8000/success/'
+STRIPE_CANCEL_URL = 'http://localhost:8000/cancel/'
