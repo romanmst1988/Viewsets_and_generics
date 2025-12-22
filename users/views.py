@@ -7,10 +7,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .filters import PaymentFilter
 from .models import CustomUser, Payment
 from .permissions import IsOwnerProfile
-from .serializers import PaymentSerializer, UserCreateSerializer, UserSerializer
-from .services import create_stripe_product, create_stripe_price, create_checkout_session
+from .serializers import (PaymentSerializer, UserCreateSerializer,
+                          UserSerializer)
+from .services import (create_checkout_session, create_stripe_price,
+                       create_stripe_product)
 
-'''View для оплаты'''
+"""View для оплаты"""
+
 
 class PaymentCreateAPIView(CreateAPIView):
     serializer_class = PaymentSerializer
@@ -27,9 +30,9 @@ class PaymentCreateAPIView(CreateAPIView):
         payment.stripe_session_id = session.id
         payment.save()
 
+
 def retrieve_session(session_id):
     return stripe.checkout.Session.retrieve(session_id)
-
 
 
 class PaymentListAPIView(generics.ListAPIView):

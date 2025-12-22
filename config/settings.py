@@ -144,16 +144,15 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',  # Замените на адрес вашего фронтенд-сервера
+    "http://localhost:8000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://read-and-write.example.com", #  Замените на адрес вашего фронтенд-сервера
-    # и добавьте адрес бэкенд-сервера
+    "https://read-and-write.example.com",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
 
-STRIPE_SECRET_KEY = 'sk_test_...'
-STRIPE_SUCCESS_URL = 'http://localhost:8000/success/'
-STRIPE_CANCEL_URL = 'http://localhost:8000/cancel/'
+STRIPE_SECRET_KEY = "sk_test_..."
+STRIPE_SUCCESS_URL = "http://localhost:8000/success/"
+STRIPE_CANCEL_URL = "http://localhost:8000/cancel/"

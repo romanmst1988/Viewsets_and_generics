@@ -1,24 +1,18 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.shortcuts import get_object_or_404
-
-from rest_framework import generics
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
-from users.permissions import IsModerator, IsOwner
 from materials.paginators import CourseLessonPagination
+from users.permissions import IsModerator, IsOwner
 
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
@@ -39,7 +33,7 @@ class CourseViewSet(ModelViewSet):
     @swagger_auto_schema(
         operation_description="Создание курса",
         request_body=CourseSerializer,
-        responses={201: CourseSerializer}
+        responses={201: CourseSerializer},
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -47,7 +41,7 @@ class CourseViewSet(ModelViewSet):
     @swagger_auto_schema(
         operation_description="Обновление курса",
         request_body=CourseSerializer,
-        responses={200: CourseSerializer}
+        responses={200: CourseSerializer},
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -55,14 +49,13 @@ class CourseViewSet(ModelViewSet):
     @swagger_auto_schema(
         operation_description="Частичное обновление курса",
         request_body=CourseSerializer,
-        responses={200: CourseSerializer}
+        responses={200: CourseSerializer},
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_description="Удаление курса",
-        responses={204: "Курс удалён"}
+        operation_description="Удаление курса", responses={204: "Курс удалён"}
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
@@ -79,7 +72,7 @@ class LessonViewSet(ModelViewSet):
     @swagger_auto_schema(
         operation_description="Создание урока",
         request_body=LessonSerializer,
-        responses={201: LessonSerializer}
+        responses={201: LessonSerializer},
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -96,7 +89,7 @@ class LessonCreateAPIView(CreateAPIView):
     @swagger_auto_schema(
         operation_description="Создание урока (Generic)",
         request_body=LessonSerializer,
-        responses={201: LessonSerializer}
+        responses={201: LessonSerializer},
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
@@ -111,8 +104,7 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsModerator | IsOwner]
 
     @swagger_auto_schema(
-        operation_description="Получение урока",
-        responses={200: LessonSerializer}
+        operation_description="Получение урока", responses={200: LessonSerializer}
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -120,14 +112,13 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     @swagger_auto_schema(
         operation_description="Обновление урока",
         request_body=LessonSerializer,
-        responses={200: LessonSerializer}
+        responses={200: LessonSerializer},
     )
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_description="Удаление урока",
-        responses={204: "Урок удалён"}
+        operation_description="Удаление урока", responses={204: "Урок удалён"}
     )
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
@@ -139,7 +130,7 @@ class LessonListAPIView(ListAPIView):
 
     @swagger_auto_schema(
         operation_description="Список уроков",
-        responses={200: LessonSerializer(many=True)}
+        responses={200: LessonSerializer(many=True)},
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -156,8 +147,7 @@ class LessonRetrieveAPIView(RetrieveAPIView):
     serializer_class = LessonSerializer
 
     @swagger_auto_schema(
-        operation_description="Получение урока",
-        responses={200: LessonSerializer}
+        operation_description="Получение урока", responses={200: LessonSerializer}
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -171,25 +161,22 @@ class SubscriptionAPIView(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'course_id': openapi.Schema(
-                    type=openapi.TYPE_INTEGER,
-                    description="ID курса"
+                "course_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID курса"
                 )
             },
-            required=['course_id']
+            required=["course_id"],
         ),
         responses={
             200: openapi.Schema(
                 type=openapi.TYPE_OBJECT,
-                properties={
-                    'message': openapi.Schema(type=openapi.TYPE_STRING)
-                }
+                properties={"message": openapi.Schema(type=openapi.TYPE_STRING)},
             )
-        }
+        },
     )
     def post(self, request, *args, **kwargs):
         user = request.user
-        course_id = request.data.get('course_id')
+        course_id = request.data.get("course_id")
 
         course = get_object_or_404(Course, id=course_id)
 
@@ -197,9 +184,9 @@ class SubscriptionAPIView(APIView):
 
         if subscription.exists():
             subscription.delete()
-            message = 'Подписка удалена'
+            message = "Подписка удалена"
         else:
             Subscription.objects.create(user=user, course=course)
-            message = 'Подписка добавлена'
+            message = "Подписка добавлена"
 
-        return Response({'message': message})
+        return Response({"message": message})
