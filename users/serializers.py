@@ -17,10 +17,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        exclude = ("password",)
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CustomUser
+#         exclude = ("password",)
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -41,10 +41,9 @@ class PaymentSerializer(serializers.ModelSerializer):
         return data
 
 
-class UserSerializer(serializers.ModelSerializer):  # type: ignore
-    # related_name в модели Payment = 'payments' => используем 'payments'
+class UserSerializer(serializers.ModelSerializer):
     payments = PaymentSerializer(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ["id", 'email', 'username', "payments"]
+        fields = ["id", "email", "username", "payments"]

@@ -15,6 +15,5 @@ class PaymentFilter(django_filters.FilterSet):
         model = Payment
         fields = {
             "course": ["exact"],
-            "lesson": ["exact"],
             "payment_method": ["exact"],
         }

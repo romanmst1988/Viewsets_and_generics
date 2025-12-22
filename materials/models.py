@@ -32,18 +32,14 @@ class Lesson(models.Model):
 # Подписка на курс
 class Subscription(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='subscriptions'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="subscriptions"
     )
     course = models.ForeignKey(
-        'materials.Course',
-        on_delete=models.CASCADE,
-        related_name='subscriptions'
+        "materials.Course", on_delete=models.CASCADE, related_name="subscriptions"
     )
 
     class Meta:
-        unique_together = ('user', 'course')
+        unique_together = ("user", "course")
 
     def __str__(self):
-        return f'{self.user} → {self.course}'
+        return f"{self.user} → {self.course}"

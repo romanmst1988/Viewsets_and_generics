@@ -2,6 +2,7 @@ import random
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from materials.models import Course, Lesson

@@ -1,34 +1,29 @@
 from django.contrib import admin
-
 # маршрут для пустого URL
 from django.http import HttpResponse
-from django.urls import include, path, re_path
+from django.urls import include, path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+from rest_framework.permissions import AllowAny
 from rest_framework.routers import DefaultRouter
 
-from materials.views import (
-    CourseViewSet,
-    LessonCreateAPIView,
-    LessonDeleteAPIView,
-    LessonListAPIView,
-    LessonRetrieveAPIView,
-    LessonUpdateAPIView,
-)
+from materials.views import (CourseViewSet, LessonCreateAPIView,
+                             LessonListAPIView, LessonRetrieveAPIView)
 from users.views import UserViewSet
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-
-from rest_framework.permissions import AllowAny
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="API",
-        default_version='v1',
-        description="API documentation",
+        title="Courses API",
+        default_version="v1",
+        description="Документация для сервиса курсов и уроков",
+        contact=openapi.Contact(email="support@example.com"),
     ),
-    public=True,                          # 🔥 ОБЯЗАТЕЛЬНО
-    permission_classes=[AllowAny],        # 🔥 ОБЯЗАТЕЛЬНО
+    public=True,
+    permission_classes=[AllowAny],
 )
+
+
 def home(request):
     return HttpResponse("<h1>API работает</h1><p>Используйте /api/</p>")
 
@@ -46,20 +41,14 @@ urlpatterns = [
         "api/lessons/<int:pk>/", LessonRetrieveAPIView.as_view(), name="lesson_detail"
     ),
     path("api/lessons/create/", LessonCreateAPIView.as_view(), name="lesson_create"),
-    path(
-        "api/lessons/<int:pk>/update/",
-        LessonUpdateAPIView.as_view(),
-        name="lesson_update",
-    ),
-    path(
-        "api/lessons/<int:pk>/delete/",
-        LessonDeleteAPIView.as_view(),
-        name="lesson_delete",
-    ),
     path("users/", include("users.urls", namespace="users")),
-    path('materials/', include('materials.urls')),
-    path('materials/', include('materials.urls')),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path("materials/", include("materials.urls")),
+    path("materials/", include("materials.urls")),
+    path(
+        "swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     # path('', include('docs.urls')),
 ]

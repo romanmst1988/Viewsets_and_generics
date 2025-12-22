@@ -1,11 +1,38 @@
+import stripe
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, viewsets
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .filters import PaymentFilter
 from .models import CustomUser, Payment
 from .permissions import IsOwnerProfile
-from .serializers import PaymentSerializer, UserCreateSerializer, UserSerializer
+from .serializers import (PaymentSerializer, UserCreateSerializer,
+                          UserSerializer)
+from .services import (create_checkout_session, create_stripe_price,
+                       create_stripe_product)
+
+"""View для оплаты"""
+
+
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+
+        product = create_stripe_product(payment.course)
+        price = create_stripe_price(product.id, payment.amount)
+        session = create_checkout_session(price.id)
+
+        payment.payment_url = session.url
+        payment.stripe_session_id = session.id
+        payment.save()
+
+
+def retrieve_session(session_id):
+    return stripe.checkout.Session.retrieve(session_id)
 
 
 class PaymentListAPIView(generics.ListAPIView):

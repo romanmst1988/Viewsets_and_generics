@@ -1,5 +1,6 @@
-from rest_framework.serializers import ValidationError
 from urllib.parse import urlparse
+
+from rest_framework.serializers import ValidationError
 
 
 def youtube_only_validator(value: str):
@@ -12,9 +13,7 @@ def youtube_only_validator(value: str):
     parsed_url = urlparse(value)
     domain = parsed_url.netloc.lower()
 
-    allowed_domains = ['youtube.com', 'www.youtube.com', 'youtu.be']
+    allowed_domains = ["youtube.com", "www.youtube.com", "youtu.be"]
 
     if domain not in allowed_domains:
-        raise ValidationError(
-            'Разрешены только ссылки на видео с youtube.com'
-        )
+        raise ValidationError("Разрешены только ссылки на видео с youtube.com")
