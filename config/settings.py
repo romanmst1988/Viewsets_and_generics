@@ -144,7 +144,7 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    '<http://localhost:8000>',  # Замените на адрес вашего фронтенд-сервера
+    'http://localhost:8000',  # Замените на адрес вашего фронтенд-сервера
 ]
 
 CSRF_TRUSTED_ORIGINS = [
