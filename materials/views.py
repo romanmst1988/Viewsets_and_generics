@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
@@ -12,13 +13,11 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from materials.paginators import CourseLessonPagination
+from materials.tasks import send_course_update_email
 from users.permissions import IsModerator, IsOwner
 
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
-
-from django.utils import timezone
-from materials.tasks import send_course_update_email
 
 
 class CourseViewSet(ModelViewSet):

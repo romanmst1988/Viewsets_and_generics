@@ -1,8 +1,9 @@
+import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
-import os
+
 from celery.schedules import crontab
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,25 +166,25 @@ STRIPE_CANCEL_URL = "http://localhost:8000/cancel/"
 
 load_dotenv()
 
-REDIS_HOST = os.getenv('REDIS_HOST')
-REDIS_PORT = os.getenv('REDIS_PORT')
-REDIS_DB = os.getenv('REDIS_DB')
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_DB = os.getenv("REDIS_DB")
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 CELERY_ENABLE_UTC = False
 
 # На Windows НУЖНО использовать пул solo.
-CELERY_WORKER_POOL = 'solo'
+CELERY_WORKER_POOL = "solo"
 
 # Добавил celery-beat расписание
 CELERY_BEAT_SCHEDULE = {
-    'deactivate-inactive-users-every-night': {
-        'task': 'users.tasks.deactivate_inactive_users',
-        'schedule': crontab(hour=3, minute=0),
+    "deactivate-inactive-users-every-night": {
+        "task": "users.tasks.deactivate_inactive_users",
+        "schedule": crontab(hour=3, minute=0),
     },
 }
