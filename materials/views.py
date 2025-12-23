@@ -85,6 +85,21 @@ class LessonViewSet(ModelViewSet):
     serializer_class = LessonSerializer
     pagination_class = CourseLessonPagination
 
+    # Дополнительное задание (обновление урока)
+    def perform_update(self, serializer):
+        lesson = serializer.save()
+        course = lesson.course
+
+        # Проверка "не чаще чем раз в 4 часа"
+        if not course.can_send_notification():
+            return
+
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [s.user.email for s in subscriptions if s.user.email]
+
+        if emails:
+            send_course_update_email.delay(emails, course.title)
+
     @swagger_auto_schema(
         operation_description="Создание урока",
         request_body=LessonSerializer,
