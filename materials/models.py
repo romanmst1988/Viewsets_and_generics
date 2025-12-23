@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
 
+from django.utils import timezone
+from datetime import timedelta
+
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -9,6 +12,11 @@ class Course(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="courses"
     )
+    # Проверка «не обновлялся 4 часа»
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def can_send_notification(self):
+        return timezone.now() - self.updated_at > timedelta(hours=4)
 
     def __str__(self):
         return self.title

@@ -17,6 +17,9 @@ from users.permissions import IsModerator, IsOwner
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 
+from django.utils import timezone
+from materials.tasks import send_course_update_email
+
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
@@ -62,6 +65,19 @@ class CourseViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    # Вызов задачи в контроллере обновления курса
+    def perform_update(self, serializer):
+        course = serializer.save()
+
+        if not course.can_send_notification():
+            return
+
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [sub.user.email for sub in subscriptions if sub.user.email]
+
+        if emails:
+            send_course_update_email.delay(emails, course.title)
 
 
 class LessonViewSet(ModelViewSet):
