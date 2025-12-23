@@ -156,3 +156,20 @@ CORS_ALLOW_ALL_ORIGINS = False
 STRIPE_SECRET_KEY = "sk_test_..."
 STRIPE_SUCCESS_URL = "http://localhost:8000/success/"
 STRIPE_CANCEL_URL = "http://localhost:8000/cancel/"
+
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379' # Например, Redis, который по умолчанию работает на порту 6379
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = "Australia/Tasmania"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
