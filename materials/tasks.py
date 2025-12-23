@@ -6,6 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 
+# Celery-задача отправки писем
 @shared_task
 def send_course_update_email(emails, course_title):
     send_mail(
