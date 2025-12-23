@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
@@ -12,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from materials.paginators import CourseLessonPagination
+from materials.tasks import send_course_update_email
 from users.permissions import IsModerator, IsOwner
 
 from .models import Course, Lesson, Subscription
@@ -63,11 +65,39 @@ class CourseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    # Вызов задачи в контроллере обновления курса
+    def perform_update(self, serializer):
+        course = serializer.save()
+
+        if not course.can_send_notification():
+            return
+
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [sub.user.email for sub in subscriptions if sub.user.email]
+
+        if emails:
+            send_course_update_email.delay(emails, course.title)
+
 
 class LessonViewSet(ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     pagination_class = CourseLessonPagination
+
+    # Дополнительное задание (обновление урока)
+    def perform_update(self, serializer):
+        lesson = serializer.save()
+        course = lesson.course
+
+        # Проверка "не чаще чем раз в 4 часа"
+        if not course.can_send_notification():
+            return
+
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [s.user.email for s in subscriptions if s.user.email]
+
+        if emails:
+            send_course_update_email.delay(emails, course.title)
 
     @swagger_auto_schema(
         operation_description="Создание урока",
