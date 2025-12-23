@@ -1,93 +1,172 @@
-# 📘 LMS Backend API (Django + DRF)
+# 📘 LMS Backend API (Django + DRF + Celery)
 
-Проект представляет собой backend-часть учебной LMS-платформы (Learning
-Management System), разработанной на **Django** и **Django REST
-Framework (DRF)**.\
-Приложение предоставляет REST API для работы с пользователями, курсами и
-уроками.
+Backend-часть учебной LMS-платформы (Learning Management System), разработанная
+на **Django** и **Django REST Framework**.
 
-## 🚀 Функциональность
+Проект предоставляет REST API для управления пользователями, курсами и уроками,
+а также включает асинхронные фоновые задачи и периодические проверки с
+использованием **Celery**, **Redis** и **celery-beat**.
+
+---
+
+## 🚀 Основная функциональность
 
 ### 🔐 Пользователи
 
--   Кастомная модель пользователя (email вместо username)
--   Дополнительные поля профиля:
-    -   телефон\
-    -   город\
-    -   аватар
--   CRUD-эндпоинты для управления пользователями
+- Кастомная модель пользователя (email вместо username)
+- JWT-аутентификация
+- Дополнительные поля профиля:
+  - телефон
+  - город
+  - аватар
+- CRUD API для управления пользователями
+- Периодическая блокировка пользователей, не заходивших более 30 дней
+  (реализовано через celery-beat)
+
+---
 
 ### 📚 Курсы
 
--   Модель Course
--   Поля:
-    -   название
-    -   описание
-    -   превью (картинка)
--   Полный CRUD на базе **ModelViewSet**
+- Модель `Course`
+- Поля:
+  - название
+  - описание
+  - превью (изображение)
+  - дата последнего обновления
+- Полный CRUD на базе **ModelViewSet**
+- Возможность подписки пользователей на обновления курсов
+- Асинхронная рассылка уведомлений подписчикам при обновлении курса
+
+---
 
 ### 🎓 Уроки
 
--   Модель Lesson
--   Поля:
-    -   название
-    -   описание
-    -   превью (картинка)
-    -   ссылка на видео
--   Связь: курс → много уроков
--   CRUD, реализованный через **GenericAPIView**
+- Модель `Lesson`
+- Поля:
+  - название
+  - описание
+  - превью (изображение)
+  - ссылка на видео
+- Связь: **один курс — много уроков**
+- CRUD API
+- При обновлении урока уведомления отправляются подписчикам соответствующего курса
+
+---
+
+## 📬 Подписки и уведомления
+
+- Пользователи могут подписываться на обновления конкретных курсов
+- При обновлении курса или любого его урока:
+  - запускается асинхронная Celery-задача
+  - подписчикам курса отправляется email-уведомление
+- Реализовано ограничение:
+  - уведомления отправляются **не чаще одного раза в 4 часа** для одного курса
+
+---
+
+## ⚙️ Асинхронные задачи (Celery)
+
+В проекте используется **Celery + Redis** для выполнения фоновых задач:
+
+- Асинхронная отправка email-уведомлений
+- Периодическая деактивация неактивных пользователей
+
+### Используемые технологии:
+- **Redis** — брокер сообщений и backend результатов
+- **Celery** — обработка фоновых задач
+- **django-celery-beat** — планировщик периодических задач
+
+⚠️ Примечание:  
+При локальной разработке на **Windows** Celery запускается с параметром
+`--pool=solo` (ограничение платформы).  
+В production-окружении предполагается запуск под Linux.
+
+---
+
+## 🕒 Периодические задачи (celery-beat)
+
+- Реализована периодическая задача:
+  - проверка пользователей по полю `last_login`
+  - если пользователь не заходил более 30 дней → `is_active = False`
+- Расписание задач настраивается через celery-beat
+- Timezone Django и Celery синхронизированы
+
+---
 
 ## 📁 Структура проекта
 
-    Viewsets_and_generics/
-    │
-    ├── config/                
-    ├── users/                 
-    │   ├── models.py
-    │   ├── views.py
-    │   ├── serializers.py
-    │
-    ├── materials/             
-    │   ├── models.py
-    │   ├── views.py
-    │   ├── serializers.py
-    │
-    └── README.md
+```
+Viewsets_and_generics/
+│
+├── config/                 # настройки проекта и Celery
+│
+├── users/                  # пользователи, подписки, celery-задачи
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   └── tasks.py
+│
+├── materials/              # курсы и уроки
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   └── tasks.py
+│
+└── README.md
+```
 
-## 🔌 Эндпоинты API
-
-### Курсы (`ViewSet`)
-
--   GET `/api/courses/`
--   POST `/api/courses/`
--   GET `/api/courses/<id>/`
--   PUT `/api/courses/<id>/`
--   PATCH `/api/courses/<id>/`
--   DELETE `/api/courses/<id>/`
-
-### Уроки (`GenericAPIView`)
-
--   GET `/api/lessons/`
--   GET `/api/lessons/<id>/`
--   POST `/api/lessons/create/`
--   PUT `/api/lessons/<id>/update/`
--   DELETE `/api/lessons/<id>/delete/`
-
-### Пользователи
-
--   GET `/api/users/`
--   POST `/api/users/`
--   GET `/api/users/<id>/`
--   PUT `/api/users/<id>/`
--   PATCH `/api/users/<id>/`
--   DELETE `/api/users/<id>/`
+---
 
 ## ▶ Запуск проекта
 
-    git clone <URL репозитория>
-    cd Viewsets_and_generics
-    python -m venv .venv
-    .venv\Scripts\activate
-    pip install -r requirements.txt
-    python manage.py migrate
-    python manage.py runserver
+### 1️⃣ Клонирование и установка зависимостей
+
+```bash
+git clone <URL репозитория>
+cd Viewsets_and_generics
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+---
+
+### 2️⃣ Переменные окружения
+
+Создать файл `.env`:
+
+```env
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+```
+
+---
+
+### 3️⃣ Миграции и запуск
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+---
+
+### 4️⃣ Запуск Celery
+
+```bash
+redis-server
+celery -A config worker -l INFO --pool=solo
+celery -A config beat -l INFO
+```
+
+---
+
+## ✅ Статус проекта
+
+- Все требования технического задания реализованы
+- Асинхронные и периодические задачи работают
+- Проект готов к проверке и дальнейшему развитию
