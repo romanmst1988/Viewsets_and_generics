@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Europe/Moscow"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -173,24 +174,16 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
+CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = False
 
 # На Windows НУЖНО использовать пул solo.
 CELERY_WORKER_POOL = 'solo'
 
-
-# # URL-адрес брокера сообщений
-# CELERY_BROKER_URL = 'redis://localhost:6379' # Например, Redis, который по умолчанию работает на порту 6379
-#
-# # URL-адрес брокера результатов, также Redis
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-#
-# # Часовой пояс для работы Celery
-# CELERY_TIMEZONE = "Australia/Tasmania"
-#
-# # Флаг отслеживания выполнения задач
-# CELERY_TASK_TRACK_STARTED = True
-#
-# # Максимальное время на выполнение задачи
-# CELERY_TASK_TIME_LIMIT = 30 * 60
+# Добавил celery-beat расписание
+CELERY_BEAT_SCHEDULE = {
+    'deactivate-inactive-users-every-night': {
+        'task': 'users.tasks.deactivate_inactive_users',
+        'schedule': crontab(hour=3, minute=0),
+    },
+}
